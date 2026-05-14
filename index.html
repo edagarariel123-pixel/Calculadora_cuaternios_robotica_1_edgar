@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Robotics Calculator</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- PANTALLA DE INICIO -->
+
+    <div id="inicio" class="pantalla">
+
+        <div class="inicio-card">
+
+            <h1>Calculadora de Robótica</h1>
+
+            <p>
+                Bienvenido al sistema de cálculo para robótica
+            </p>
+
+            <button onclick="mostrarCuaternios()">
+                Operaciones con Cuaterniones
+            </button>
+
+            <button onclick="mostrarMatrices()">
+                Matriz Inversa Homogénea
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- PANTALLA CUATERNIONES -->
+
+    <div id="cuaternios" class="pantalla oculto">
+
+        <div class="container">
+
+            <button class="volver" onclick="volverInicio()">
+                ← Volver
+            </button>
+
+            <h1>Calculadora de Cuaternios</h1>
+
+            <div class="instrucciones">
+
+                <h2>Instrucciones</h2>
+
+                <ul>
+                    <li>Ingrese los valores de Q1 y Q2.</li>
+                    <li>El escalar es opcional.</li>
+                    <li>La norma se calcula sobre Q3 = Q1 × Q2.</li>
+                </ul>
+
+            </div>
+
+            <div class="card">
+
+                <h2>Cuaternión Q1</h2>
+
+                <div class="inputs">
+
+                    <input type="number" id="q1s" placeholder="s">
+                    <input type="number" id="q1x" placeholder="x">
+                    <input type="number" id="q1y" placeholder="y">
+                    <input type="number" id="q1z" placeholder="z">
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h2>Cuaternión Q2</h2>
+
+                <div class="inputs">
+
+                    <input type="number" id="q2s" placeholder="s">
+                    <input type="number" id="q2x" placeholder="x">
+                    <input type="number" id="q2y" placeholder="y">
+                    <input type="number" id="q2z" placeholder="z">
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h2>Escalar Opcional</h2>
+
+                <input type="number" id="escalar" placeholder="Ingrese un escalar">
+
+            </div>
+
+            <button onclick="calcularCuaternios()">
+                Calcular Operaciones
+            </button>
+
+            <div class="resultado">
+
+                <h2>Resultados</h2>
+
+                <p id="suma"></p>
+                <p id="multiplicacion"></p>
+                <p id="norma"></p>
+                <p id="inverso"></p>
+                <p id="escalarResultado"></p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- PANTALLA MATRIZ -->
+
+    <div id="matrices" class="pantalla oculto">
+
+        <div class="container">
+
+            <button class="volver" onclick="volverInicio()">
+                ← Volver
+            </button>
+
+            <h1>Matriz Inversa Homogénea</h1>
+
+            <div class="instrucciones">
+
+                <h2>Instrucciones</h2>
+
+                <ul>
+                    <li>Ingrese una matriz homogénea 4x4.</li>
+                    <li>La última fila debe ser [0 0 0 1].</li>
+                    <li>Se calcula usando:</li>
+                </ul>
+
+                <div class="formula">
+
+                    T⁻¹ = [ Rᵀ   −Rᵀd ]
+
+                    <br><br>
+
+                    [ 0        1 ]
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h2>Matriz Homogénea</h2>
+
+                <div class="matriz-grid">
+
+                    <input type="number" id="m00">
+                    <input type="number" id="m01">
+                    <input type="number" id="m02">
+                    <input type="number" id="m03">
+
+                    <input type="number" id="m10">
+                    <input type="number" id="m11">
+                    <input type="number" id="m12">
+                    <input type="number" id="m13">
+
+                    <input type="number" id="m20">
+                    <input type="number" id="m21">
+                    <input type="number" id="m22">
+                    <input type="number" id="m23">
+
+                    <input type="number" id="m30">
+                    <input type="number" id="m31">
+                    <input type="number" id="m32">
+                    <input type="number" id="m33">
+
+                </div>
+
+            </div>
+
+            <button onclick="calcularInversa()">
+                Calcular Inversa
+            </button>
+
+            <div class="resultado">
+
+                <h2>Matriz Inversa</h2>
+
+                <pre id="resultadoMatriz"></pre>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

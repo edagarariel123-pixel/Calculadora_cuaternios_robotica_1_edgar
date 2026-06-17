@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Calculadora de Robótica</title>
+  <desc id="desc">Icono de una calculadora con nodos de robótica.</desc>
+  <rect width="512" height="512" rx="108" fill="#0f172a"/>
+  <rect x="104" y="80" width="304" height="352" rx="48" fill="#1e293b" stroke="#60a5fa" stroke-width="18"/>
+  <rect x="146" y="128" width="220" height="72" rx="18" fill="#0b1120"/>
+  <circle cx="172" cy="258" r="23" fill="#22d3ee"/>
+  <circle cx="256" cy="258" r="23" fill="#60a5fa"/>
+  <circle cx="340" cy="258" r="23" fill="#38bdf8"/>
+  <circle cx="172" cy="336" r="23" fill="#60a5fa"/>
+  <circle cx="256" cy="336" r="23" fill="#22d3ee"/>
+  <circle cx="340" cy="336" r="23" fill="#60a5fa"/>
+  <path d="M176 164h160M172 258h168M172 336h168M256 258v78" fill="none" stroke="#dbeafe" stroke-width="12" stroke-linecap="round" opacity=".75"/>
+</svg>

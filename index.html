@@ -2,206 +2,142 @@
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Calculadora de robótica para operaciones con cuaterniones y matriz inversa homogénea.">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Calc Robótica">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <title>Robotics Calculator</title>
+    <title>Calculadora de Robótica</title>
 
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
+    <main>
+        <section id="inicio" class="pantalla">
+            <div class="inicio-card">
+                <p class="etiqueta">Robótica</p>
+                <h1>Calculadora de Robótica</h1>
+                <p>Calcula operaciones con cuaterniones y matrices homogéneas desde tu teléfono.</p>
 
-    <!-- PANTALLA DE INICIO -->
-
-    <div id="inicio" class="pantalla">
-
-        <div class="inicio-card">
-
-            <h1>Calculadora de Robótica</h1>
-
-            <p>
-                Bienvenido al sistema de cálculo para robótica
-            </p>
-
-            <button onclick="mostrarCuaternios()">
-                Operaciones con Cuaterniones
-            </button>
-
-            <button onclick="mostrarMatrices()">
-                Matriz Inversa Homogénea
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- PANTALLA CUATERNIONES -->
-
-    <div id="cuaternios" class="pantalla oculto">
-
-        <div class="container">
-
-            <button class="volver" onclick="volverInicio()">
-                ← Volver
-            </button>
-
-            <h1>Calculadora de Cuaternios</h1>
-
-            <div class="instrucciones">
-
-                <h2>Instrucciones</h2>
-
-                <ul>
-                    <li>Ingrese los valores de Q1 y Q2.</li>
-                    <li>El escalar es opcional.</li>
-                    <li>La norma se calcula sobre Q3 = Q1 × Q2.</li>
-                </ul>
-
+                <button type="button" onclick="mostrarCuaternios()">Operaciones con Cuaterniones</button>
+                <button type="button" onclick="mostrarMatrices()">Matriz Inversa Homogénea</button>
             </div>
+        </section>
 
-            <div class="card">
+        <section id="cuaternios" class="pantalla oculto">
+            <div class="container">
+                <button type="button" class="volver" onclick="volverInicio()">← Volver</button>
 
-                <h2>Cuaternión Q1</h2>
+                <h1>Calculadora de Cuaternios</h1>
 
-                <div class="inputs">
-
-                    <input type="number" id="q1s" placeholder="s">
-                    <input type="number" id="q1x" placeholder="x">
-                    <input type="number" id="q1y" placeholder="y">
-                    <input type="number" id="q1z" placeholder="z">
-
+                <div class="instrucciones">
+                    <h2>Instrucciones</h2>
+                    <ul>
+                        <li>Ingrese los valores de Q1 y Q2.</li>
+                        <li>El escalar es opcional.</li>
+                        <li>La norma se calcula sobre Q3 = Q1 × Q2.</li>
+                    </ul>
                 </div>
 
-            </div>
-
-            <div class="card">
-
-                <h2>Cuaternión Q2</h2>
-
-                <div class="inputs">
-
-                    <input type="number" id="q2s" placeholder="s">
-                    <input type="number" id="q2x" placeholder="x">
-                    <input type="number" id="q2y" placeholder="y">
-                    <input type="number" id="q2z" placeholder="z">
-
+                <div class="card">
+                    <h2>Cuaternión Q1</h2>
+                    <div class="inputs">
+                        <input type="number" inputmode="decimal" id="q1s" placeholder="s">
+                        <input type="number" inputmode="decimal" id="q1x" placeholder="x">
+                        <input type="number" inputmode="decimal" id="q1y" placeholder="y">
+                        <input type="number" inputmode="decimal" id="q1z" placeholder="z">
+                    </div>
                 </div>
 
-            </div>
-
-            <div class="card">
-
-                <h2>Escalar Opcional</h2>
-
-                <input type="number" id="escalar" placeholder="Ingrese un escalar">
-
-            </div>
-
-            <button onclick="calcularCuaternios()">
-                Calcular Operaciones
-            </button>
-
-            <div class="resultado">
-
-                <h2>Resultados</h2>
-
-                <p id="suma"></p>
-                <p id="multiplicacion"></p>
-                <p id="norma"></p>
-                <p id="inverso"></p>
-                <p id="escalarResultado"></p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- PANTALLA MATRIZ -->
-
-    <div id="matrices" class="pantalla oculto">
-
-        <div class="container">
-
-            <button class="volver" onclick="volverInicio()">
-                ← Volver
-            </button>
-
-            <h1>Matriz Inversa Homogénea</h1>
-
-            <div class="instrucciones">
-
-                <h2>Instrucciones</h2>
-
-                <ul>
-                    <li>Ingrese una matriz homogénea 4x4.</li>
-                    <li>La última fila debe ser [0 0 0 1].</li>
-                    <li>Se calcula usando:</li>
-                </ul>
-
-                <div class="formula">
-
-                    T⁻¹ = [ Rᵀ   −Rᵀd ]
-
-                    <br><br>
-
-                    [ 0        1 ]
-
+                <div class="card">
+                    <h2>Cuaternión Q2</h2>
+                    <div class="inputs">
+                        <input type="number" inputmode="decimal" id="q2s" placeholder="s">
+                        <input type="number" inputmode="decimal" id="q2x" placeholder="x">
+                        <input type="number" inputmode="decimal" id="q2y" placeholder="y">
+                        <input type="number" inputmode="decimal" id="q2z" placeholder="z">
+                    </div>
                 </div>
 
-            </div>
-
-            <div class="card">
-
-                <h2>Matriz Homogénea</h2>
-
-                <div class="matriz-grid">
-
-                    <input type="number" id="m00">
-                    <input type="number" id="m01">
-                    <input type="number" id="m02">
-                    <input type="number" id="m03">
-
-                    <input type="number" id="m10">
-                    <input type="number" id="m11">
-                    <input type="number" id="m12">
-                    <input type="number" id="m13">
-
-                    <input type="number" id="m20">
-                    <input type="number" id="m21">
-                    <input type="number" id="m22">
-                    <input type="number" id="m23">
-
-                    <input type="number" id="m30">
-                    <input type="number" id="m31">
-                    <input type="number" id="m32">
-                    <input type="number" id="m33">
-
+                <div class="card">
+                    <h2>Escalar Opcional</h2>
+                    <input type="number" inputmode="decimal" id="escalar" placeholder="Ingrese un escalar">
                 </div>
 
+                <button type="button" onclick="calcularCuaternios()">Calcular Operaciones</button>
+
+                <div class="resultado" aria-live="polite">
+                    <h2>Resultados</h2>
+                    <p id="suma"></p>
+                    <p id="multiplicacion"></p>
+                    <p id="norma"></p>
+                    <p id="inverso"></p>
+                    <p id="escalarResultado"></p>
+                </div>
             </div>
+        </section>
 
-            <button onclick="calcularInversa()">
-                Calcular Inversa
-            </button>
+        <section id="matrices" class="pantalla oculto">
+            <div class="container">
+                <button type="button" class="volver" onclick="volverInicio()">← Volver</button>
 
-            <div class="resultado">
+                <h1>Matriz Inversa Homogénea</h1>
 
-                <h2>Matriz Inversa</h2>
+                <div class="instrucciones">
+                    <h2>Instrucciones</h2>
+                    <ul>
+                        <li>Ingrese una matriz homogénea 4x4.</li>
+                        <li>La última fila debe ser [0 0 0 1].</li>
+                        <li>Se calcula usando:</li>
+                    </ul>
 
-                <pre id="resultadoMatriz"></pre>
+                    <div class="formula">
+                        T⁻¹ = [ Rᵀ   −Rᵀd ]<br>
+                        [ 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 ]
+                    </div>
+                </div>
 
+                <div class="card">
+                    <h2>Matriz Homogénea</h2>
+                    <div class="matriz-grid">
+                        <input type="number" inputmode="decimal" id="m00" aria-label="Fila 1 columna 1">
+                        <input type="number" inputmode="decimal" id="m01" aria-label="Fila 1 columna 2">
+                        <input type="number" inputmode="decimal" id="m02" aria-label="Fila 1 columna 3">
+                        <input type="number" inputmode="decimal" id="m03" aria-label="Fila 1 columna 4">
+                        <input type="number" inputmode="decimal" id="m10" aria-label="Fila 2 columna 1">
+                        <input type="number" inputmode="decimal" id="m11" aria-label="Fila 2 columna 2">
+                        <input type="number" inputmode="decimal" id="m12" aria-label="Fila 2 columna 3">
+                        <input type="number" inputmode="decimal" id="m13" aria-label="Fila 2 columna 4">
+                        <input type="number" inputmode="decimal" id="m20" aria-label="Fila 3 columna 1">
+                        <input type="number" inputmode="decimal" id="m21" aria-label="Fila 3 columna 2">
+                        <input type="number" inputmode="decimal" id="m22" aria-label="Fila 3 columna 3">
+                        <input type="number" inputmode="decimal" id="m23" aria-label="Fila 3 columna 4">
+                        <input type="number" inputmode="decimal" id="m30" aria-label="Fila 4 columna 1">
+                        <input type="number" inputmode="decimal" id="m31" aria-label="Fila 4 columna 2">
+                        <input type="number" inputmode="decimal" id="m32" aria-label="Fila 4 columna 3">
+                        <input type="number" inputmode="decimal" id="m33" aria-label="Fila 4 columna 4">
+                    </div>
+                </div>
+
+                <button type="button" onclick="calcularInversa()">Calcular Inversa</button>
+
+                <div class="resultado" aria-live="polite">
+                    <h2>Matriz Inversa</h2>
+                    <pre id="resultadoMatriz"></pre>
+                </div>
             </div>
-
-        </div>
-
-    </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
-
 </body>
 
 </html>

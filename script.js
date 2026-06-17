@@ -1,24 +1,71 @@
-function mostrarCuaternios() {
+const idsCuaternios = ["q1s", "q1x", "q1y", "q1z", "q2s", "q2x", "q2y", "q2z", "escalar"];
+const idsMatriz = [
+    "m00", "m01", "m02", "m03",
+    "m10", "m11", "m12", "m13",
+    "m20", "m21", "m22", "m23",
+    "m30", "m31", "m32", "m33"
+];
+
+function mostrarPantalla(id) {
     document.getElementById("inicio").classList.add("oculto");
-    document.getElementById("cuaternios").classList.remove("oculto");
+    document.getElementById("cuaternios").classList.add("oculto");
+    document.getElementById("matrices").classList.add("oculto");
+    document.getElementById(id).classList.remove("oculto");
     window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function mostrarCuaternios() {
+    mostrarPantalla("cuaternios");
 }
 
 function mostrarMatrices() {
-    document.getElementById("inicio").classList.add("oculto");
-    document.getElementById("matrices").classList.remove("oculto");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    mostrarPantalla("matrices");
 }
 
 function volverInicio() {
-    document.getElementById("inicio").classList.remove("oculto");
-    document.getElementById("cuaternios").classList.add("oculto");
-    document.getElementById("matrices").classList.add("oculto");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    mostrarPantalla("inicio");
 }
 
 function numero(id) {
     return parseFloat(document.getElementById(id).value) || 0;
+}
+
+function colocarValores(valores) {
+    Object.entries(valores).forEach(([id, valor]) => {
+        document.getElementById(id).value = valor;
+    });
+}
+
+function limpiarCampos(ids) {
+    ids.forEach((id) => {
+        document.getElementById(id).value = "";
+    });
+}
+
+function limpiarResultadosCuaternios() {
+    ["suma", "multiplicacion", "norma", "inverso", "escalarResultado"].forEach((id) => {
+        document.getElementById(id).textContent = "";
+    });
+}
+
+function limpiarCuaternios() {
+    limpiarCampos(idsCuaternios);
+    limpiarResultadosCuaternios();
+}
+
+function cargarEjemploCuaternios() {
+    colocarValores({
+        q1s: 1,
+        q1x: 2,
+        q1y: 3,
+        q1z: 4,
+        q2s: 0.5,
+        q2x: -1,
+        q2y: 2,
+        q2z: 1,
+        escalar: 3
+    });
+    calcularCuaternios();
 }
 
 function calcularCuaternios() {
@@ -39,19 +86,19 @@ function calcularCuaternios() {
     const r2 = a * g - b * h + c * e + d * f;
     const r3 = a * h + b * g - c * f + d * e;
 
-    const multiplicacion = `Q3 = Q1 × Q2 = (${r0.toFixed(4)}, ${r1.toFixed(4)}, ${r2.toFixed(4)}, ${r3.toFixed(4)})`;
+    const multiplicacion = `Q3 = Q1 \u00d7 Q2 = (${r0.toFixed(4)}, ${r1.toFixed(4)}, ${r2.toFixed(4)}, ${r3.toFixed(4)})`;
     const norma = Math.sqrt(r0 * r0 + r1 * r1 + r2 * r2 + r3 * r3);
     const textoNorma = `||Q3|| = ${norma.toFixed(4)}`;
 
     const denominador = a * a + b * b + c * c + d * d;
     const inverso = denominador === 0
-        ? "Q1⁻¹ no existe porque la norma de Q1 es 0."
-        : `Q1⁻¹ = (${(a / denominador).toFixed(4)}, ${(-b / denominador).toFixed(4)}, ${(-c / denominador).toFixed(4)}, ${(-d / denominador).toFixed(4)})`;
+        ? "Q1\u207b\u00b9 no existe porque la norma de Q1 es 0."
+        : `Q1\u207b\u00b9 = (${(a / denominador).toFixed(4)}, ${(-b / denominador).toFixed(4)}, ${(-c / denominador).toFixed(4)}, ${(-d / denominador).toFixed(4)})`;
 
     let textoEscalar = "Escalar no ingresado";
     if (escalar !== "") {
         const k = parseFloat(escalar);
-        textoEscalar = `k·Q1 = (${(k * a).toFixed(4)}, ${(k * b).toFixed(4)}, ${(k * c).toFixed(4)}, ${(k * d).toFixed(4)})`;
+        textoEscalar = `k\u00b7Q1 = (${(k * a).toFixed(4)}, ${(k * b).toFixed(4)}, ${(k * c).toFixed(4)}, ${(k * d).toFixed(4)})`;
     }
 
     document.getElementById("suma").textContent = suma;
@@ -59,6 +106,33 @@ function calcularCuaternios() {
     document.getElementById("norma").textContent = textoNorma;
     document.getElementById("inverso").textContent = inverso;
     document.getElementById("escalarResultado").textContent = textoEscalar;
+}
+
+function limpiarMatriz() {
+    limpiarCampos(idsMatriz);
+    document.getElementById("resultadoMatriz").textContent = "";
+}
+
+function cargarEjemploMatriz() {
+    colocarValores({
+        m00: 1,
+        m01: 0,
+        m02: 0,
+        m03: 4,
+        m10: 0,
+        m11: 1,
+        m12: 0,
+        m13: -2,
+        m20: 0,
+        m21: 0,
+        m22: 1,
+        m23: 3,
+        m30: 0,
+        m31: 0,
+        m32: 0,
+        m33: 1
+    });
+    calcularInversa();
 }
 
 function calcularInversa() {
@@ -81,12 +155,12 @@ function calcularInversa() {
     const dz = -(Rt[2][0] * d[0] + Rt[2][1] * d[1] + Rt[2][2] * d[2]);
 
     const resultado = `
-┌                                             ┐
+\u250c                                             \u2510
   ${Rt[0][0].toFixed(4)}   ${Rt[0][1].toFixed(4)}   ${Rt[0][2].toFixed(4)}   ${dx.toFixed(4)}
   ${Rt[1][0].toFixed(4)}   ${Rt[1][1].toFixed(4)}   ${Rt[1][2].toFixed(4)}   ${dy.toFixed(4)}
   ${Rt[2][0].toFixed(4)}   ${Rt[2][1].toFixed(4)}   ${Rt[2][2].toFixed(4)}   ${dz.toFixed(4)}
   0.0000   0.0000   0.0000   1.0000
-└                                             ┘`;
+\u2514                                             \u2518`;
 
     document.getElementById("resultadoMatriz").textContent = resultado;
 }

@@ -1,13 +1,14 @@
 :root {
     color-scheme: dark;
-    --bg: #0f172a;
-    --surface: #111827;
-    --panel: #172554;
-    --card: #1e293b;
-    --field: #334155;
+    --bg: #0b1220;
+    --surface: #101827;
+    --panel: #17213a;
+    --card: #1f2a3d;
+    --field: #314158;
     --primary: #2563eb;
     --primary-light: #60a5fa;
     --accent: #22d3ee;
+    --line: rgba(148, 163, 184, 0.22);
     --text: #ffffff;
     --muted: #cbd5e1;
 }
@@ -26,14 +27,21 @@ body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
     background:
-        radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 32rem),
-        linear-gradient(135deg, #0f172a, #1e3a8a);
+        linear-gradient(135deg, rgba(37, 99, 235, 0.24), transparent 42%),
+        linear-gradient(160deg, #0b1220, #14213d 58%, #062531);
     color: var(--text);
 }
 
 button,
 input {
     font: inherit;
+}
+
+button {
+    border: 0;
+    color: var(--text);
+    cursor: pointer;
+    touch-action: manipulation;
 }
 
 .pantalla {
@@ -44,77 +52,179 @@ input {
     padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
 }
 
+.pantalla-inicio {
+    align-items: center;
+}
+
 .oculto {
     display: none;
 }
 
 .container {
     width: min(100%, 980px);
-    padding: 28px 0;
+    padding: 24px 0;
 }
 
 .inicio-card {
-    width: min(100%, 520px);
+    width: min(100%, 560px);
     padding: 34px;
+    border: 1px solid var(--line);
     border-radius: 18px;
-    background: rgba(17, 24, 39, 0.94);
-    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.38);
+    background: rgba(16, 24, 39, 0.94);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
     text-align: center;
 }
 
-.etiqueta {
-    margin: 0 0 10px;
+.etiqueta,
+.chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 6px 12px;
+    border: 1px solid rgba(34, 211, 238, 0.35);
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.08);
     color: var(--accent);
     font-size: 0.82rem;
     font-weight: 700;
+}
+
+.etiqueta {
+    margin: 0 0 14px;
     letter-spacing: 0;
     text-transform: uppercase;
 }
 
 h1 {
-    margin: 0 0 22px;
+    margin: 0 0 16px;
     color: var(--primary-light);
-    font-size: clamp(2rem, 6vw, 2.8rem);
+    font-size: clamp(2rem, 6vw, 2.85rem);
     line-height: 1.08;
     text-align: center;
 }
 
 h2 {
     margin: 0 0 16px;
-    font-size: 1.25rem;
+    font-size: 1.18rem;
 }
 
 p {
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
-.inicio-card p:not(.etiqueta) {
-    margin: 0 0 28px;
+.intro,
+.encabezado p {
     color: var(--muted);
 }
 
-.instrucciones {
-    margin-bottom: 20px;
-    padding: 22px;
-    border-left: 6px solid var(--primary-light);
+.intro {
+    margin: 0 auto 28px;
+    max-width: 35rem;
+}
+
+.menu-opciones {
+    display: grid;
+    gap: 12px;
+}
+
+.opcion-card {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 14px;
+    align-items: center;
+    min-height: 78px;
+    padding: 14px;
+    border: 1px solid var(--line);
     border-radius: 14px;
-    background: rgba(23, 37, 84, 0.92);
+    background: rgba(31, 42, 61, 0.95);
+    text-align: left;
 }
 
-.instrucciones ul {
+.opcion-card:hover,
+.opcion-card:focus-visible,
+.boton-principal:hover,
+.boton-principal:focus-visible {
+    background: #2f70f3;
+}
+
+.opcion-icono {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(34, 211, 238, 0.14);
+    color: var(--accent);
+    font-weight: 800;
+}
+
+.opcion-card strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 1.04rem;
+}
+
+.opcion-card small {
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.35;
+}
+
+.barra-superior {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.volver,
+.boton-secundario {
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: rgba(31, 42, 61, 0.86);
+    font-weight: 700;
+}
+
+.volver:hover,
+.volver:focus-visible,
+.boton-secundario:hover,
+.boton-secundario:focus-visible {
+    background: rgba(96, 165, 250, 0.24);
+}
+
+.encabezado {
+    max-width: 720px;
+    margin: 0 auto 22px;
+    text-align: center;
+}
+
+.encabezado p {
     margin: 0;
-    padding-left: 20px;
 }
 
-.instrucciones li + li {
-    margin-top: 8px;
+.acciones-secundarias {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.grid-formulario {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
 }
 
 .card {
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     padding: 22px;
+    border: 1px solid var(--line);
     border-radius: 14px;
-    background: rgba(30, 41, 59, 0.96);
+    background: rgba(31, 42, 61, 0.94);
 }
 
 .inputs {
@@ -123,11 +233,23 @@ p {
     gap: 12px;
 }
 
+label {
+    display: grid;
+    gap: 7px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.campo-ancho {
+    max-width: 360px;
+}
+
 input {
     width: 100%;
     min-height: 52px;
-    padding: 14px;
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    padding: 13px 14px;
+    border: 1px solid var(--line);
     border-radius: 10px;
     outline: none;
     background: var(--field);
@@ -135,56 +257,50 @@ input {
     font-size: 16px;
 }
 
+input::placeholder {
+    color: rgba(203, 213, 225, 0.62);
+}
+
 input:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
 }
 
-button {
+.boton-principal {
     width: 100%;
-    min-height: 56px;
-    margin-bottom: 14px;
+    min-height: 58px;
+    margin: 2px 0 18px;
     padding: 16px;
-    border: 0;
     border-radius: 12px;
     background: var(--primary);
-    color: var(--text);
     font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-button:hover,
-button:focus-visible {
-    background: #3b82f6;
+    font-weight: 800;
 }
 
 .resultado {
-    margin-top: 22px;
+    margin-top: 8px;
     padding: 24px;
-    border: 2px solid var(--primary-light);
+    border: 2px solid rgba(96, 165, 250, 0.78);
     border-radius: 14px;
-    background: rgba(15, 23, 42, 0.96);
+    background: rgba(11, 18, 32, 0.94);
     overflow-x: auto;
 }
 
+.resultado-lista {
+    display: grid;
+    gap: 12px;
+}
+
 .resultado p {
-    margin: 0 0 12px;
+    margin: 0;
     padding: 14px;
     border-radius: 10px;
-    background: var(--card);
+    background: rgba(31, 42, 61, 0.95);
     overflow-wrap: anywhere;
 }
 
 .resultado p:empty {
     display: none;
-}
-
-.volver {
-    width: auto;
-    min-width: 132px;
-    background: #1e40af;
 }
 
 .matriz-grid {
@@ -195,7 +311,7 @@ button:focus-visible {
 
 .matriz-grid input {
     min-width: 0;
-    padding-inline: 10px;
+    padding-inline: 8px;
     text-align: center;
 }
 
@@ -203,27 +319,33 @@ pre {
     margin: 0;
     color: var(--accent);
     font-size: clamp(0.82rem, 3.2vw, 1rem);
-    line-height: 1.5;
+    line-height: 1.55;
     white-space: pre;
 }
 
 .formula {
-    margin-top: 18px;
-    padding: 18px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 18px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
     border-radius: 12px;
-    background: rgba(15, 23, 42, 0.9);
-    font-size: 1.12rem;
-    line-height: 1.7;
+    background: rgba(15, 23, 42, 0.88);
+    color: var(--muted);
+    font-size: 1.05rem;
     text-align: center;
 }
 
-@media (max-width: 620px) {
+@media (max-width: 720px) {
     .pantalla {
         align-items: flex-start;
     }
 
+    .pantalla-inicio {
+        align-items: center;
+    }
+
     .inicio-card {
-        margin-top: 8vh;
         padding: 26px 20px;
         border-radius: 14px;
     }
@@ -232,12 +354,17 @@ pre {
         padding: 8px 0 20px;
     }
 
-    h1 {
-        margin-bottom: 18px;
+    .grid-formulario {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .acciones-secundarias {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
     }
 
     .card,
-    .instrucciones,
     .resultado {
         padding: 18px;
     }
@@ -253,5 +380,20 @@ pre {
     .matriz-grid input {
         min-height: 48px;
         padding-inline: 6px;
+    }
+}
+
+@media (max-width: 390px) {
+    .acciones-secundarias {
+        grid-template-columns: 1fr;
+    }
+
+    .opcion-card {
+        grid-template-columns: 42px 1fr;
+    }
+
+    .opcion-icono {
+        width: 42px;
+        height: 42px;
     }
 }

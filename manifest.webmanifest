@@ -1,13 +1,13 @@
 {
-  "name": "Calculadora de Robótica",
-  "short_name": "Calc Robótica",
-  "description": "Calculadora de robótica para cuaterniones y matriz inversa homogénea.",
+  "name": "Calculadora de Rob\u00f3tica",
+  "short_name": "Calc Rob\u00f3tica",
+  "description": "Calculadora de rob\u00f3tica para cuaterniones y matriz inversa homog\u00e9nea.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
   "icons": [
     {
       "src": "icons/icon.svg",

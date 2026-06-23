@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <meta name="description" content="Calculadora de robotica para cuaterniones, matrices homogeneas, traslacion, rotacion y operaciones de matrices.">
+    <meta name="description" content="Calculadora de robotica para cuaterniones, matrices homogeneas, traslacion, rotacion, D-H y operaciones de matrices.">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Calc Robotica">
@@ -25,7 +25,7 @@
             <div class="inicio-card">
                 <p class="etiqueta">Rob&oacute;tica aplicada</p>
                 <h1>Calculadora de Rob&oacute;tica</h1>
-                <p class="intro">Operaciones con cuaterniones, matrices homog&eacute;neas, traslaci&oacute;n, rotaci&oacute;n y matrices generales en una app ligera para tu tel&eacute;fono.</p>
+                <p class="intro">Operaciones con cuaterniones, matrices homog&eacute;neas, traslaci&oacute;n, rotaci&oacute;n, D-H y matrices generales en una app ligera para tu tel&eacute;fono.</p>
 
                 <div class="menu-opciones" aria-label="Operaciones disponibles">
                     <button type="button" class="opcion-card" onclick="mostrarCuaternios()">
@@ -65,6 +65,14 @@
                         <span>
                             <strong>Operaciones de matrices</strong>
                             <small>Suma, resta, producto, transpuesta y determinante</small>
+                        </span>
+                    </button>
+
+                    <button type="button" class="opcion-card" onclick="mostrarDenavitHartenberg()">
+                        <span class="opcion-icono">DH</span>
+                        <span>
+                            <strong>Denavit-Hartenberg</strong>
+                            <small>Par&aacute;metros D-H, matrices A_i y matriz final T</small>
                         </span>
                     </button>
                 </div>
@@ -402,6 +410,75 @@
                     <h2>Resultado</h2>
                     <p id="detalleMatrices"></p>
                     <div id="resultadoMatricesGenerales" class="matriz-resultado"></div>
+                </section>
+            </div>
+        </section>
+
+        <section id="denavitHartenberg" class="pantalla oculto">
+            <div class="container">
+                <div class="barra-superior">
+                    <button type="button" class="volver" onclick="volverInicio()">&larr; Volver</button>
+                    <span class="chip">D-H</span>
+                </div>
+
+                <header class="encabezado">
+                    <h1>Algoritmo de Denavit-Hartenberg</h1>
+                    <p>Ingresa los par&aacute;metros de cada eslab&oacute;n: <strong>theta</strong>, <strong>d</strong>, <strong>a</strong> y <strong>alpha</strong>. Los &aacute;ngulos se interpretan en grados si son num&eacute;ricos.</p>
+                </header>
+
+                <section class="card">
+                    <h2>Idea del m&eacute;todo</h2>
+                    <div class="explicacion-lista">
+                        <p>Para cada eslab&oacute;n se forma una matriz homog&eacute;nea A_i usando esta secuencia:</p>
+                        <p><strong>A_i = Rotz(theta_i) &middot; Tz(d_i) &middot; Tx(a_i) &middot; Rotx(alpha_i)</strong></p>
+                        <p>Luego se multiplican todas las matrices en orden:</p>
+                        <p><strong>T = A_1 &middot; A_2 &middot; ... &middot; A_n</strong></p>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <h2>Par&aacute;metros</h2>
+                    <div class="inputs">
+                        <label>
+                            <span>N&uacute;mero de eslabones</span>
+                            <select id="numeroEslabonesDH" onchange="actualizarTablaDH()">
+                                <option value="4">4</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="tabla-dh-wrap">
+                        <div class="tabla-dh encabezado-tabla-dh">
+                            <span>i</span>
+                            <span>theta</span>
+                            <span>d</span>
+                            <span>a</span>
+                            <span>alpha</span>
+                        </div>
+                        <div id="tablaDH"></div>
+                    </div>
+                </section>
+
+                <div class="acciones-secundarias">
+                    <button type="button" class="boton-secundario" onclick="cargarEjemploDH()">Cargar ejemplo 4.2</button>
+                    <button type="button" class="boton-secundario" onclick="limpiarDH()">Limpiar</button>
+                </div>
+
+                <button type="button" class="boton-principal" onclick="calcularDH()">Calcular matriz T</button>
+
+                <section class="resultado" aria-live="polite">
+                    <h2>Resultado</h2>
+                    <p id="detalleDH"></p>
+                    <div id="resultadoTDH" class="matriz-resultado"></div>
+                    <h2 class="subtitulo-resultado">Matrices A_i</h2>
+                    <div id="matricesIntermediasDH" class="matrices-dh"></div>
+                    <h2 class="subtitulo-resultado">C&oacute;mo se hizo</h2>
+                    <div id="explicacionDH" class="explicacion-lista"></div>
                 </section>
             </div>
         </section>

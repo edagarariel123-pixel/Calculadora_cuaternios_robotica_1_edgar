@@ -15,6 +15,7 @@ function mostrarPantalla(id) {
     document.getElementById("traslacion").classList.add("oculto");
     document.getElementById("rotacion").classList.add("oculto");
     document.getElementById("operacionesMatrices").classList.add("oculto");
+    document.getElementById("denavitHartenberg").classList.add("oculto");
     document.getElementById(id).classList.remove("oculto");
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -37,6 +38,10 @@ function mostrarRotacion() {
 
 function mostrarOperacionesMatrices() {
     mostrarPantalla("operacionesMatrices");
+}
+
+function mostrarDenavitHartenberg() {
+    mostrarPantalla("denavitHartenberg");
 }
 
 function volverInicio() {
@@ -187,6 +192,20 @@ function exprEsUno(expr) {
     return expr.numerico && limpiarNumero(expr.valor) === 1;
 }
 
+function exprSinSignoNegativo(expr) {
+    if (expr.numerico) return null;
+
+    if (expr.texto.startsWith("(-") && expr.texto.endsWith(")")) {
+        return { numerico: false, valor: null, texto: expr.texto.slice(2, -1) };
+    }
+
+    if (expr.texto.startsWith("-")) {
+        return { numerico: false, valor: null, texto: expr.texto.slice(1) };
+    }
+
+    return null;
+}
+
 function exprSuma(a, b) {
     if (exprEsCero(a)) return b;
     if (exprEsCero(b)) return a;
@@ -205,7 +224,37 @@ function exprProducto(a, b) {
     if (exprEsUno(a)) return b;
     if (exprEsUno(b)) return a;
     if (a.numerico && b.numerico) return exprNumero(a.valor * b.valor);
+    if (a.numerico && limpiarNumero(a.valor) === -1) return exprNegativo(b);
+    if (b.numerico && limpiarNumero(b.valor) === -1) return exprNegativo(a);
+
+    const aSinSigno = exprSinSignoNegativo(a);
+    const bSinSigno = exprSinSignoNegativo(b);
+
+    if (aSinSigno && bSinSigno) return exprProducto(aSinSigno, bSinSigno);
+    if (aSinSigno) return exprNegativo(exprProducto(aSinSigno, b));
+    if (bSinSigno) return exprNegativo(exprProducto(a, bSinSigno));
+
     return { numerico: false, valor: null, texto: `(${exprTexto(a)}*${exprTexto(b)})` };
+}
+
+function exprNegativo(a) {
+    if (a.numerico) return exprNumero(-a.valor);
+    const sinSigno = exprSinSignoNegativo(a);
+    if (sinSigno) return sinSigno;
+    if (a.texto.startsWith("(") && a.texto.endsWith(")")) {
+        return { numerico: false, valor: null, texto: `-${a.texto}` };
+    }
+    return { numerico: false, valor: null, texto: `(-${exprTexto(a)})` };
+}
+
+function exprTrigonometrica(funcion, expr) {
+    if (expr.numerico) {
+        const radianes = expr.valor * Math.PI / 180;
+        if (funcion === "cos") return exprNumero(Math.cos(radianes));
+        if (funcion === "sen") return exprNumero(Math.sin(radianes));
+    }
+
+    return { numerico: false, valor: null, texto: `${funcion}(${exprTexto(expr)})` };
 }
 
 function matrizCofactor(matriz, columnaExcluida) {
@@ -230,6 +279,54 @@ function determinanteExpresion(matriz) {
         const termino = exprProducto(elemento, determinanteExpresion(matrizCofactor(matriz, columna)));
         return columna % 2 === 0 ? exprSuma(total, termino) : exprResta(total, termino);
     }, exprNumero(0));
+}
+
+function multiplicarMatricesExpresion(A, B) {
+    const filasA = A.length;
+    const columnasA = A[0].length;
+    const columnasB = B[0].length;
+    const resultado = [];
+
+    for (let fila = 0; fila < filasA; fila += 1) {
+        const filaResultado = [];
+
+        for (let columna = 0; columna < columnasB; columna += 1) {
+            let total = exprNumero(0);
+
+            for (let k = 0; k < columnasA; k += 1) {
+                total = exprSuma(total, exprProducto(A[fila][k], B[k][columna]));
+            }
+
+            filaResultado.push(total);
+        }
+
+        resultado.push(filaResultado);
+    }
+
+    return resultado;
+}
+
+function matrizIdentidadExpresion(tamano) {
+    return Array.from({ length: tamano }, (_, fila) =>
+        Array.from({ length: tamano }, (_, columna) => exprNumero(fila === columna ? 1 : 0))
+    );
+}
+
+function renderMatrizEnContenedor(contenedor, matriz) {
+    contenedor.innerHTML = "";
+
+    const grid = document.createElement("div");
+    grid.className = "matriz-resultado-grid";
+    grid.dataset.rows = String(matriz.length);
+    grid.dataset.cols = String(matriz[0].length);
+
+    matriz.flat().forEach((expr) => {
+        const celda = document.createElement("span");
+        celda.textContent = exprTexto(expr);
+        grid.appendChild(celda);
+    });
+
+    contenedor.appendChild(grid);
 }
 
 function limpiarResultadosCuaternios() {
@@ -749,6 +846,148 @@ function calcularMatricesGenerales() {
     renderMatrizResultado(resultado);
 }
 
+function actualizarTablaDH() {
+    const cantidad = parseInt(document.getElementById("numeroEslabonesDH").value, 10);
+    const contenedor = document.getElementById("tablaDH");
+    const valores = {};
+
+    contenedor.querySelectorAll("input").forEach((input) => {
+        valores[input.id] = input.value;
+    });
+
+    contenedor.innerHTML = "";
+
+    for (let i = 1; i <= cantidad; i += 1) {
+        const fila = document.createElement("div");
+        fila.className = "tabla-dh";
+        fila.innerHTML = `
+            <span>${i}</span>
+            <input type="text" id="dhTheta${i}" placeholder="theta${i}">
+            <input type="text" id="dhD${i}" placeholder="d${i}">
+            <input type="text" id="dhA${i}" placeholder="a${i}">
+            <input type="text" id="dhAlpha${i}" placeholder="alpha${i}">
+        `;
+        contenedor.appendChild(fila);
+    }
+
+    Object.entries(valores).forEach(([id, valor]) => {
+        const input = document.getElementById(id);
+        if (input) input.value = valor;
+    });
+}
+
+function leerParametrosDH() {
+    const cantidad = parseInt(document.getElementById("numeroEslabonesDH").value, 10);
+    const parametros = [];
+
+    for (let i = 1; i <= cantidad; i += 1) {
+        parametros.push({
+            theta: expresionDesdeEntrada(document.getElementById(`dhTheta${i}`).value),
+            d: expresionDesdeEntrada(document.getElementById(`dhD${i}`).value),
+            a: expresionDesdeEntrada(document.getElementById(`dhA${i}`).value),
+            alpha: expresionDesdeEntrada(document.getElementById(`dhAlpha${i}`).value)
+        });
+    }
+
+    return parametros;
+}
+
+function matrizDH(parametro) {
+    const ct = exprTrigonometrica("cos", parametro.theta);
+    const st = exprTrigonometrica("sen", parametro.theta);
+    const ca = exprTrigonometrica("cos", parametro.alpha);
+    const sa = exprTrigonometrica("sen", parametro.alpha);
+
+    return [
+        [ct, exprNegativo(exprProducto(ca, st)), exprProducto(sa, st), exprProducto(parametro.a, ct)],
+        [st, exprProducto(ca, ct), exprNegativo(exprProducto(sa, ct)), exprProducto(parametro.a, st)],
+        [exprNumero(0), sa, ca, parametro.d],
+        [exprNumero(0), exprNumero(0), exprNumero(0), exprNumero(1)]
+    ];
+}
+
+function limpiarDH() {
+    document.querySelectorAll("#tablaDH input").forEach((input) => {
+        input.value = "";
+    });
+    document.getElementById("detalleDH").textContent = "";
+    document.getElementById("resultadoTDH").innerHTML = "";
+    document.getElementById("matricesIntermediasDH").innerHTML = "";
+    document.getElementById("explicacionDH").innerHTML = "";
+}
+
+function cargarEjemploDH() {
+    document.getElementById("numeroEslabonesDH").value = "4";
+    actualizarTablaDH();
+    colocarValores({
+        dhTheta1: "q1",
+        dhD1: "l1",
+        dhA1: "0",
+        dhAlpha1: "0",
+        dhTheta2: "90",
+        dhD2: "d2",
+        dhA2: "0",
+        dhAlpha2: "90",
+        dhTheta3: "0",
+        dhD3: "d3",
+        dhA3: "0",
+        dhAlpha3: "0",
+        dhTheta4: "q4",
+        dhD4: "l4",
+        dhA4: "0",
+        dhAlpha4: "0"
+    });
+    calcularDH();
+}
+
+function renderMatricesIntermediasDH(matrices) {
+    const contenedor = document.getElementById("matricesIntermediasDH");
+    contenedor.innerHTML = "";
+
+    matrices.forEach((matriz, indice) => {
+        const bloque = document.createElement("div");
+        bloque.className = "matriz-dh-item";
+        const titulo = document.createElement("h3");
+        titulo.textContent = `A_${indice + 1}`;
+        const matrizContenedor = document.createElement("div");
+        matrizContenedor.className = "matriz-resultado";
+        renderMatrizEnContenedor(matrizContenedor, matriz);
+        bloque.appendChild(titulo);
+        bloque.appendChild(matrizContenedor);
+        contenedor.appendChild(bloque);
+    });
+}
+
+function explicarDH(parametros) {
+    const contenedor = document.getElementById("explicacionDH");
+    contenedor.innerHTML = "";
+    const pasos = [
+        "1. Por cada eslabon se toman cuatro parametros: theta_i, d_i, a_i y alpha_i.",
+        "2. Con esos parametros se arma A_i = Rotz(theta_i) . Tz(d_i) . Tx(a_i) . Rotx(alpha_i).",
+        "3. theta y alpha son angulos. Si ingresas numeros, la app usa grados; si ingresas variables, conserva sen(variable) y cos(variable).",
+        `4. Como ingresaste ${parametros.length} eslabon(es), la matriz final se calcula como T = ${parametros.map((_, i) => `A_${i + 1}`).join(" . ")}.`,
+        "5. La submatriz 3x3 superior izquierda representa orientacion; la ultima columna representa posicion del extremo respecto a la base."
+    ];
+
+    pasos.forEach((paso) => {
+        const p = document.createElement("p");
+        p.textContent = paso;
+        contenedor.appendChild(p);
+    });
+}
+
+function calcularDH() {
+    const parametros = leerParametrosDH();
+    const matrices = parametros.map(matrizDH);
+    const total = matrices.reduce((acumulado, matriz) => multiplicarMatricesExpresion(acumulado, matriz), matrizIdentidadExpresion(4));
+
+    document.getElementById("detalleDH").textContent =
+        `Matriz final T calculada con ${parametros.length} eslabon(es): T = ${parametros.map((_, i) => `A_${i + 1}`).join(" . ")}`;
+    renderMatrizEnContenedor(document.getElementById("resultadoTDH"), total);
+    renderMatricesIntermediasDH(matrices);
+    explicarDH(parametros);
+}
+
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
         navigator.serviceWorker.register("./service-worker.js").then((registration) => {
@@ -761,4 +1000,5 @@ if ("serviceWorker" in navigator) {
 
 window.addEventListener("DOMContentLoaded", () => {
     actualizarMatricesGenerales();
+    actualizarTablaDH();
 });

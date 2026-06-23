@@ -462,6 +462,64 @@ select {
     display: none;
 }
 
+.tabla-dh-wrap {
+    display: grid;
+    gap: 9px;
+    overflow-x: auto;
+}
+
+.tabla-dh {
+    display: grid;
+    grid-template-columns: 40px repeat(4, minmax(92px, 1fr));
+    gap: 8px;
+    align-items: center;
+    min-width: 520px;
+}
+
+.encabezado-tabla-dh {
+    color: var(--muted);
+    font-weight: 800;
+    text-align: center;
+}
+
+.tabla-dh span {
+    text-align: center;
+}
+
+.tabla-dh input {
+    min-width: 0;
+    text-align: center;
+}
+
+.explicacion-lista {
+    display: grid;
+    gap: 10px;
+}
+
+.explicacion-lista p {
+    margin: 0;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(31, 42, 61, 0.72);
+    color: var(--muted);
+}
+
+.matrices-dh {
+    display: grid;
+    gap: 14px;
+}
+
+.matriz-dh-item {
+    display: grid;
+    gap: 8px;
+}
+
+.matriz-dh-item h3 {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.98rem;
+}
+
 pre {
     margin: 0;
     color: var(--accent);

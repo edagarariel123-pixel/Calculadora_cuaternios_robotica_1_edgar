@@ -1,4 +1,4 @@
-const CACHE_NAME = "calculadora-robotica-v4";
+const CACHE_NAME = "calculadora-robotica-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -32,8 +32,12 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) =>
-      cachedResponse || fetch(event.request)
+    fetch(event.request).then((networkResponse) => {
+      const responseCopy = networkResponse.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseCopy));
+      return networkResponse;
+    }).catch(() =>
+      caches.match(event.request).then((cachedResponse) => cachedResponse)
     )
   );
 });

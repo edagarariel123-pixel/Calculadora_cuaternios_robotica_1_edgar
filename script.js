@@ -202,6 +202,7 @@ function calcularTraslacion() {
     const ry = rv + py;
     const rz = rw + pz;
     const formato = (valor) => valor.toFixed(4).padStart(9);
+    const celda = (valor) => `<span>${Number(valor).toFixed(4)}</span>`;
 
     document.getElementById("vectorTraslacion").textContent =
         `p = (${px.toFixed(4)}, ${py.toFixed(4)}, ${pz.toFixed(4)})`;
@@ -219,31 +220,46 @@ T(p) =
   0.0000   0.0000   0.0000     1.0000
 \u2514                                  \u2518`;
 
-    const producto = `
-T(p) \u00d7 r_uvw
-
-\u250c                                  \u2510   \u250c           \u2510
-  1.0000   0.0000   0.0000  ${formato(px)}     ${formato(ru)}
-  0.0000   1.0000   0.0000  ${formato(py)}  \u00d7  ${formato(rv)}
-  0.0000   0.0000   1.0000  ${formato(pz)}     ${formato(rw)}
-  0.0000   0.0000   0.0000     1.0000       1.0000
-\u2514                                  \u2518   \u2514           \u2518
-
-Resultado:
-\u250c           \u2510
-  ${formato(rx)}
-  ${formato(ry)}
-  ${formato(rz)}
-     1.0000
-\u2514           \u2518`;
-
     document.getElementById("matrizTraslacion").textContent = matriz;
-    document.getElementById("productoTraslacion").textContent = producto;
+    document.getElementById("productoTraslacion").innerHTML = `
+        <div class="producto-fila">
+            <div class="producto-bloque">
+                <span class="producto-titulo">T(p)</span>
+                <div class="matriz-visual" aria-label="Matriz de traslacion">
+                    ${celda(1)}${celda(0)}${celda(0)}${celda(px)}
+                    ${celda(0)}${celda(1)}${celda(0)}${celda(py)}
+                    ${celda(0)}${celda(0)}${celda(1)}${celda(pz)}
+                    ${celda(0)}${celda(0)}${celda(0)}${celda(1)}
+                </div>
+            </div>
+            <div class="producto-signo">\u00d7</div>
+            <div class="producto-bloque">
+                <span class="producto-titulo">r_uvw</span>
+                <div class="vector-visual" aria-label="Vector en O'UVW">
+                    ${celda(ru)}
+                    ${celda(rv)}
+                    ${celda(rw)}
+                    ${celda(1)}
+                </div>
+            </div>
+            <div class="producto-signo">=</div>
+            <div class="producto-bloque">
+                <span class="producto-titulo">r_xyz</span>
+                <div class="vector-visual" aria-label="Resultado en OXYZ">
+                    ${celda(rx)}
+                    ${celda(ry)}
+                    ${celda(rz)}
+                    ${celda(1)}
+                </div>
+            </div>
+        </div>`;
 }
 
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch(() => {
+        navigator.serviceWorker.register("./service-worker.js").then((registration) => {
+            registration.update();
+        }).catch(() => {
             // La app sigue funcionando aunque el navegador no permita service workers en archivo local.
         });
     });

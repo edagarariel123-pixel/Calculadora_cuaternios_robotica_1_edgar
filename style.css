@@ -313,6 +313,68 @@ input:focus {
     font-size: 1rem;
 }
 
+.producto-traslacion {
+    display: grid;
+    gap: 14px;
+    color: var(--accent);
+}
+
+.producto-traslacion:empty {
+    display: none;
+}
+
+.producto-fila {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 0.42fr) auto minmax(0, 0.42fr);
+    gap: 10px;
+    align-items: center;
+}
+
+.producto-bloque {
+    min-width: 0;
+}
+
+.producto-titulo {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.producto-signo {
+    color: var(--text);
+    font-weight: 800;
+    text-align: center;
+}
+
+.matriz-visual,
+.vector-visual {
+    display: grid;
+    gap: 6px;
+    padding: 12px;
+    border-left: 2px solid var(--accent);
+    border-right: 2px solid var(--accent);
+    border-radius: 6px;
+    background: rgba(34, 211, 238, 0.05);
+    font-family: Consolas, "Courier New", monospace;
+    font-size: clamp(0.78rem, 2.7vw, 0.96rem);
+}
+
+.matriz-visual {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.vector-visual {
+    grid-template-columns: 1fr;
+}
+
+.matriz-visual span,
+.vector-visual span {
+    min-width: 0;
+    text-align: right;
+    white-space: nowrap;
+}
+
 .matriz-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -390,6 +452,14 @@ pre {
     .matriz-grid input {
         min-height: 48px;
         padding-inline: 6px;
+    }
+
+    .producto-fila {
+        grid-template-columns: 1fr;
+    }
+
+    .producto-signo {
+        min-height: 24px;
     }
 }
 

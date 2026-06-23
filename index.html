@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <meta name="description" content="Calculadora de robotica para operaciones con cuaterniones y matriz inversa homogenea.">
+    <meta name="description" content="Calculadora de robotica para cuaterniones, matrices homogeneas y traslacion.">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Calc Robotica">
@@ -25,7 +25,7 @@
             <div class="inicio-card">
                 <p class="etiqueta">Rob&oacute;tica aplicada</p>
                 <h1>Calculadora de Rob&oacute;tica</h1>
-                <p class="intro">Operaciones con cuaterniones y matrices homog&eacute;neas en una app ligera para tu tel&eacute;fono.</p>
+                <p class="intro">Operaciones con cuaterniones, matrices homog&eacute;neas y traslaci&oacute;n en una app ligera para tu tel&eacute;fono.</p>
 
                 <div class="menu-opciones" aria-label="Operaciones disponibles">
                     <button type="button" class="opcion-card" onclick="mostrarCuaternios()">
@@ -41,6 +41,14 @@
                         <span>
                             <strong>Matriz inversa</strong>
                             <small>Transformaci&oacute;n homog&eacute;nea 4x4</small>
+                        </span>
+                    </button>
+
+                    <button type="button" class="opcion-card" onclick="mostrarTraslacion()">
+                        <span class="opcion-icono">P</span>
+                        <span>
+                            <strong>Traslaci&oacute;n</strong>
+                            <small>Matriz T(p) y coordenadas desplazadas</small>
                         </span>
                     </button>
                 </div>
@@ -157,6 +165,64 @@
                 <section class="resultado" aria-live="polite">
                     <h2>Matriz inversa</h2>
                     <pre id="resultadoMatriz"></pre>
+                </section>
+            </div>
+        </section>
+
+        <section id="traslacion" class="pantalla oculto">
+            <div class="container">
+                <div class="barra-superior">
+                    <button type="button" class="volver" onclick="volverInicio()">&larr; Volver</button>
+                    <span class="chip">Traslaci&oacute;n</span>
+                </div>
+
+                <header class="encabezado">
+                    <h1>Traslaci&oacute;n</h1>
+                    <p>Ingresa el vector de traslaci&oacute;n <strong>p = (px, py, pz)</strong> y el vector <strong>r<sub>uvw</sub> = (ru, rv, rw)</strong>. La app calcula las coordenadas en OXYZ.</p>
+                </header>
+
+                <div class="formula">
+                    r<sub>xyz</sub> = r<sub>uvw</sub> + p
+                </div>
+
+                <div class="acciones-secundarias">
+                    <button type="button" class="boton-secundario" onclick="cargarEjemploTraslacion()">Cargar ejemplo 3.1</button>
+                    <button type="button" class="boton-secundario" onclick="limpiarTraslacion()">Limpiar</button>
+                </div>
+
+                <div class="grid-formulario">
+                    <section class="card">
+                        <h2>Vector de traslaci&oacute;n p</h2>
+                        <div class="inputs inputs-tres">
+                            <label><span>px</span><input type="number" inputmode="decimal" id="px" placeholder="6"></label>
+                            <label><span>py</span><input type="number" inputmode="decimal" id="py" placeholder="-3"></label>
+                            <label><span>pz</span><input type="number" inputmode="decimal" id="pz" placeholder="8"></label>
+                        </div>
+                    </section>
+
+                    <section class="card">
+                        <h2>Vector r en O'UVW</h2>
+                        <div class="inputs inputs-tres">
+                            <label><span>ru</span><input type="number" inputmode="decimal" id="ru" placeholder="-2"></label>
+                            <label><span>rv</span><input type="number" inputmode="decimal" id="rv" placeholder="7"></label>
+                            <label><span>rw</span><input type="number" inputmode="decimal" id="rw" placeholder="3"></label>
+                        </div>
+                    </section>
+                </div>
+
+                <button type="button" class="boton-principal" onclick="calcularTraslacion()">Calcular traslaci&oacute;n</button>
+
+                <section class="resultado" aria-live="polite">
+                    <h2>Resultado</h2>
+                    <div class="resultado-lista">
+                        <p id="vectorTraslacion"></p>
+                        <p id="vectorOriginal"></p>
+                        <p id="vectorResultado"></p>
+                    </div>
+                    <h2 class="subtitulo-resultado">Matriz T(p)</h2>
+                    <pre id="matrizTraslacion"></pre>
+                    <h2 class="subtitulo-resultado">Producto homog&eacute;neo</h2>
+                    <pre id="productoTraslacion"></pre>
                 </section>
             </div>
         </section>

@@ -5,11 +5,13 @@ const idsMatriz = [
     "m20", "m21", "m22", "m23",
     "m30", "m31", "m32", "m33"
 ];
+const idsTraslacion = ["px", "py", "pz", "ru", "rv", "rw"];
 
 function mostrarPantalla(id) {
     document.getElementById("inicio").classList.add("oculto");
     document.getElementById("cuaternios").classList.add("oculto");
     document.getElementById("matrices").classList.add("oculto");
+    document.getElementById("traslacion").classList.add("oculto");
     document.getElementById(id).classList.remove("oculto");
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -20,6 +22,10 @@ function mostrarCuaternios() {
 
 function mostrarMatrices() {
     mostrarPantalla("matrices");
+}
+
+function mostrarTraslacion() {
+    mostrarPantalla("traslacion");
 }
 
 function volverInicio() {
@@ -163,6 +169,65 @@ function calcularInversa() {
 \u2514                                             \u2518`;
 
     document.getElementById("resultadoMatriz").textContent = resultado;
+}
+
+function limpiarTraslacion() {
+    limpiarCampos(idsTraslacion);
+    ["vectorTraslacion", "vectorOriginal", "vectorResultado", "matrizTraslacion", "productoTraslacion"].forEach((id) => {
+        document.getElementById(id).textContent = "";
+    });
+}
+
+function cargarEjemploTraslacion() {
+    colocarValores({
+        px: 6,
+        py: -3,
+        pz: 8,
+        ru: -2,
+        rv: 7,
+        rw: 3
+    });
+    calcularTraslacion();
+}
+
+function calcularTraslacion() {
+    const px = numero("px");
+    const py = numero("py");
+    const pz = numero("pz");
+    const ru = numero("ru");
+    const rv = numero("rv");
+    const rw = numero("rw");
+
+    const rx = ru + px;
+    const ry = rv + py;
+    const rz = rw + pz;
+
+    document.getElementById("vectorTraslacion").textContent =
+        `p = (${px.toFixed(4)}, ${py.toFixed(4)}, ${pz.toFixed(4)})`;
+    document.getElementById("vectorOriginal").textContent =
+        `r_uvw = (${ru.toFixed(4)}, ${rv.toFixed(4)}, ${rw.toFixed(4)})`;
+    document.getElementById("vectorResultado").textContent =
+        `r_xyz = (${rx.toFixed(4)}, ${ry.toFixed(4)}, ${rz.toFixed(4)})`;
+
+    const matriz = `
+T(p) =
+\u250c                                  \u2510
+  1.0000   0.0000   0.0000   ${px.toFixed(4)}
+  0.0000   1.0000   0.0000   ${py.toFixed(4)}
+  0.0000   0.0000   1.0000   ${pz.toFixed(4)}
+  0.0000   0.0000   0.0000   1.0000
+\u2514                                  \u2518`;
+
+    const producto = `
+\u250c      \u2510   \u250c                                  \u2510 \u250c      \u2510   \u250c      \u2510
+  rx       1   0   0   ${px.toFixed(4)}        ru       ${rx.toFixed(4)}
+  ry   =   0   1   0   ${py.toFixed(4)}    x   rv   =   ${ry.toFixed(4)}
+  rz       0   0   1   ${pz.toFixed(4)}        rw       ${rz.toFixed(4)}
+  1        0   0   0   1             1        1.0000
+\u2514      \u2518   \u2514                                  \u2518 \u2514      \u2518   \u2514      \u2518`;
+
+    document.getElementById("matrizTraslacion").textContent = matriz;
+    document.getElementById("productoTraslacion").textContent = producto;
 }
 
 if ("serviceWorker" in navigator) {

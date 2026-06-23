@@ -1,7 +1,7 @@
 {
   "name": "Calculadora de Rob\u00f3tica",
   "short_name": "Calc Rob\u00f3tica",
-  "description": "Calculadora de rob\u00f3tica para cuaterniones y matriz inversa homog\u00e9nea.",
+  "description": "Calculadora de rob\u00f3tica para cuaterniones, matriz inversa homog\u00e9nea y traslaci\u00f3n.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

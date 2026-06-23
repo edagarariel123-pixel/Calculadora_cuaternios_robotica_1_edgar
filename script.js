@@ -14,6 +14,7 @@ function mostrarPantalla(id) {
     document.getElementById("matrices").classList.add("oculto");
     document.getElementById("traslacion").classList.add("oculto");
     document.getElementById("rotacion").classList.add("oculto");
+    document.getElementById("operacionesMatrices").classList.add("oculto");
     document.getElementById(id).classList.remove("oculto");
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -32,6 +33,10 @@ function mostrarTraslacion() {
 
 function mostrarRotacion() {
     mostrarPantalla("rotacion");
+}
+
+function mostrarOperacionesMatrices() {
+    mostrarPantalla("operacionesMatrices");
 }
 
 function volverInicio() {
@@ -98,6 +103,133 @@ ${titulo} =
   ${formato(matriz[2][0])} ${formato(matriz[2][1])} ${formato(matriz[2][2])} ${formato(matriz[2][3])}
   ${formato(matriz[3][0])} ${formato(matriz[3][1])} ${formato(matriz[3][2])} ${formato(matriz[3][3])}
 \u2514                                  \u2518`;
+}
+
+function formatoNumeroGeneral(valor) {
+    const limpio = limpiarNumero(valor);
+    if (Number.isInteger(limpio)) {
+        return String(limpio);
+    }
+
+    return limpio.toFixed(4).replace(/\.?0+$/, "");
+}
+
+function evaluarExpresionNumerica(texto) {
+    const expresion = texto
+        .toLowerCase()
+        .replace(/,/g, ".")
+        .replace(/\bsen\b/g, "sin")
+        .replace(/\^/g, "**");
+    const identificadores = expresion.match(/[a-z_]\w*/g) || [];
+    const permitidos = new Set(["sin", "cos", "tan", "pi", "e"]);
+
+    if (identificadores.some((id) => !permitidos.has(id))) {
+        return null;
+    }
+
+    if (!/^[0-9+\-*/().\s*a-z_]+$/.test(expresion)) {
+        return null;
+    }
+
+    try {
+        const sin = (grados) => Math.sin(grados * Math.PI / 180);
+        const cos = (grados) => Math.cos(grados * Math.PI / 180);
+        const tan = (grados) => Math.tan(grados * Math.PI / 180);
+        const valor = Function("sin", "cos", "tan", "pi", "e", `"use strict"; return (${expresion});`)(sin, cos, tan, Math.PI, Math.E);
+
+        if (Number.isFinite(valor)) {
+            return limpiarNumero(valor);
+        }
+    } catch {
+        return null;
+    }
+
+    return null;
+}
+
+function expresionDesdeEntrada(valor) {
+    const texto = valor.trim();
+
+    if (texto === "") {
+        return { numerico: true, valor: 0, texto: "0" };
+    }
+
+    const numeroCalculado = evaluarExpresionNumerica(texto);
+
+    if (numeroCalculado !== null) {
+        return {
+            numerico: true,
+            valor: numeroCalculado,
+            texto: formatoNumeroGeneral(numeroCalculado)
+        };
+    }
+
+    return {
+        numerico: false,
+        valor: null,
+        texto: texto.replace(/\bsen\s*\(/gi, "sen(")
+    };
+}
+
+function exprTexto(expr) {
+    return expr.numerico ? formatoNumeroGeneral(expr.valor) : expr.texto;
+}
+
+function exprNumero(valor) {
+    return { numerico: true, valor: limpiarNumero(valor), texto: formatoNumeroGeneral(valor) };
+}
+
+function exprEsCero(expr) {
+    return expr.numerico && limpiarNumero(expr.valor) === 0;
+}
+
+function exprEsUno(expr) {
+    return expr.numerico && limpiarNumero(expr.valor) === 1;
+}
+
+function exprSuma(a, b) {
+    if (exprEsCero(a)) return b;
+    if (exprEsCero(b)) return a;
+    if (a.numerico && b.numerico) return exprNumero(a.valor + b.valor);
+    return { numerico: false, valor: null, texto: `(${exprTexto(a)} + ${exprTexto(b)})` };
+}
+
+function exprResta(a, b) {
+    if (exprEsCero(b)) return a;
+    if (a.numerico && b.numerico) return exprNumero(a.valor - b.valor);
+    return { numerico: false, valor: null, texto: `(${exprTexto(a)} - ${exprTexto(b)})` };
+}
+
+function exprProducto(a, b) {
+    if (exprEsCero(a) || exprEsCero(b)) return exprNumero(0);
+    if (exprEsUno(a)) return b;
+    if (exprEsUno(b)) return a;
+    if (a.numerico && b.numerico) return exprNumero(a.valor * b.valor);
+    return { numerico: false, valor: null, texto: `(${exprTexto(a)}*${exprTexto(b)})` };
+}
+
+function matrizCofactor(matriz, columnaExcluida) {
+    return matriz.slice(1).map((fila) => fila.filter((_, columna) => columna !== columnaExcluida));
+}
+
+function determinanteExpresion(matriz) {
+    const n = matriz.length;
+
+    if (n === 1) {
+        return matriz[0][0];
+    }
+
+    if (n === 2) {
+        return exprResta(
+            exprProducto(matriz[0][0], matriz[1][1]),
+            exprProducto(matriz[0][1], matriz[1][0])
+        );
+    }
+
+    return matriz[0].reduce((total, elemento, columna) => {
+        const termino = exprProducto(elemento, determinanteExpresion(matrizCofactor(matriz, columna)));
+        return columna % 2 === 0 ? exprSuma(total, termino) : exprResta(total, termino);
+    }, exprNumero(0));
 }
 
 function limpiarResultadosCuaternios() {
@@ -395,6 +527,178 @@ function calcularRotacion() {
     renderProductoHomogeneo("productoRotacion", rotacion, matriz, vector, resultado, "r_uvw", "r_xyz");
 }
 
+function actualizarMatricesGenerales() {
+    const dimension = parseInt(document.getElementById("dimensionMatrices").value, 10);
+    crearMatrizGeneral("A", dimension);
+    crearMatrizGeneral("B", dimension);
+    actualizarOperacionMatrices();
+}
+
+function crearMatrizGeneral(nombre, dimension) {
+    const contenedor = document.getElementById(`matrizGeneral${nombre}`);
+    const valoresAnteriores = {};
+
+    contenedor.querySelectorAll("input").forEach((input) => {
+        valoresAnteriores[input.dataset.posicion] = input.value;
+    });
+
+    contenedor.innerHTML = "";
+    contenedor.dataset.size = String(dimension);
+
+    for (let fila = 0; fila < dimension; fila += 1) {
+        for (let columna = 0; columna < dimension; columna += 1) {
+            const input = document.createElement("input");
+            const posicion = `${fila}-${columna}`;
+            input.type = "text";
+            input.inputMode = "text";
+            input.dataset.posicion = posicion;
+            input.id = `mat${nombre}${fila}${columna}`;
+            input.placeholder = fila === columna ? "1" : "0";
+            input.setAttribute("aria-label", `Matriz ${nombre} fila ${fila + 1} columna ${columna + 1}`);
+            input.value = valoresAnteriores[posicion] || "";
+            contenedor.appendChild(input);
+        }
+    }
+}
+
+function actualizarOperacionMatrices() {
+    const operacion = document.getElementById("operacionMatrices").value;
+    const necesitaB = ["suma", "resta", "multiplicacion"].includes(operacion);
+    const necesitaEscalar = operacion === "escalar";
+    document.getElementById("cardMatrizB").classList.toggle("oculto-card", !necesitaB);
+    document.getElementById("campoEscalarMatrices").classList.toggle("oculto-control", !necesitaEscalar);
+}
+
+function leerMatrizGeneral(nombre) {
+    const dimension = parseInt(document.getElementById("dimensionMatrices").value, 10);
+    const matriz = [];
+
+    for (let fila = 0; fila < dimension; fila += 1) {
+        const filaValores = [];
+
+        for (let columna = 0; columna < dimension; columna += 1) {
+            filaValores.push(expresionDesdeEntrada(document.getElementById(`mat${nombre}${fila}${columna}`).value));
+        }
+
+        matriz.push(filaValores);
+    }
+
+    return matriz;
+}
+
+function limpiarMatricesGenerales() {
+    document.querySelectorAll("#matrizGeneralA input, #matrizGeneralB input").forEach((input) => {
+        input.value = "";
+    });
+    document.getElementById("escalarMatrices").value = "";
+    document.getElementById("detalleMatrices").textContent = "";
+    document.getElementById("resultadoMatricesGenerales").innerHTML = "";
+}
+
+function cargarEjemploMatricesGenerales() {
+    document.getElementById("dimensionMatrices").value = "2";
+    document.getElementById("operacionMatrices").value = "multiplicacion";
+    actualizarMatricesGenerales();
+    colocarValores({
+        matA00: "cos(30)",
+        matA01: "-sen(30)",
+        matA10: "sen(30)",
+        matA11: "cos(30)",
+        matB00: "x",
+        matB01: "1",
+        matB10: "2",
+        matB11: "y"
+    });
+    calcularMatricesGenerales();
+}
+
+function sumarMatrices(A, B) {
+    return A.map((fila, i) => fila.map((valor, j) => exprSuma(valor, B[i][j])));
+}
+
+function restarMatrices(A, B) {
+    return A.map((fila, i) => fila.map((valor, j) => exprResta(valor, B[i][j])));
+}
+
+function multiplicarMatrices(A, B) {
+    const dimension = A.length;
+    const resultado = [];
+
+    for (let fila = 0; fila < dimension; fila += 1) {
+        const filaResultado = [];
+
+        for (let columna = 0; columna < dimension; columna += 1) {
+            let total = exprNumero(0);
+
+            for (let k = 0; k < dimension; k += 1) {
+                total = exprSuma(total, exprProducto(A[fila][k], B[k][columna]));
+            }
+
+            filaResultado.push(total);
+        }
+
+        resultado.push(filaResultado);
+    }
+
+    return resultado;
+}
+
+function transponerMatriz(A) {
+    return A.map((fila, i) => fila.map((_, j) => A[j][i]));
+}
+
+function escalarPorMatriz(escalar, A) {
+    return A.map((fila) => fila.map((valor) => exprProducto(escalar, valor)));
+}
+
+function renderMatrizResultado(matriz) {
+    const contenedor = document.getElementById("resultadoMatricesGenerales");
+    contenedor.innerHTML = "";
+
+    const grid = document.createElement("div");
+    grid.className = "matriz-resultado-grid";
+    grid.dataset.size = String(matriz[0].length);
+
+    matriz.flat().forEach((expr) => {
+        const celda = document.createElement("span");
+        celda.textContent = exprTexto(expr);
+        grid.appendChild(celda);
+    });
+
+    contenedor.appendChild(grid);
+}
+
+function calcularMatricesGenerales() {
+    const operacion = document.getElementById("operacionMatrices").value;
+    const A = leerMatrizGeneral("A");
+    const B = leerMatrizGeneral("B");
+    const detalle = document.getElementById("detalleMatrices");
+    let resultado;
+
+    if (operacion === "suma") {
+        resultado = sumarMatrices(A, B);
+        detalle.textContent = "Resultado de A + B";
+    } else if (operacion === "resta") {
+        resultado = restarMatrices(A, B);
+        detalle.textContent = "Resultado de A - B";
+    } else if (operacion === "multiplicacion") {
+        resultado = multiplicarMatrices(A, B);
+        detalle.textContent = "Resultado de A x B";
+    } else if (operacion === "transpuesta") {
+        resultado = transponerMatriz(A);
+        detalle.textContent = "Transpuesta de A";
+    } else if (operacion === "determinante") {
+        resultado = [[determinanteExpresion(A)]];
+        detalle.textContent = "Determinante de A";
+    } else {
+        const escalar = expresionDesdeEntrada(document.getElementById("escalarMatrices").value);
+        resultado = escalarPorMatriz(escalar, A);
+        detalle.textContent = `Resultado de ${exprTexto(escalar)} x A`;
+    }
+
+    renderMatrizResultado(resultado);
+}
+
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
         navigator.serviceWorker.register("./service-worker.js").then((registration) => {
@@ -404,3 +708,7 @@ if ("serviceWorker" in navigator) {
         });
     });
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+    actualizarMatricesGenerales();
+});

@@ -6,12 +6,14 @@ const idsMatriz = [
     "m30", "m31", "m32", "m33"
 ];
 const idsTraslacion = ["px", "py", "pz", "ru", "rv", "rw"];
+const idsRotacion = ["anguloRotacion", "rotRu", "rotRv", "rotRw"];
 
 function mostrarPantalla(id) {
     document.getElementById("inicio").classList.add("oculto");
     document.getElementById("cuaternios").classList.add("oculto");
     document.getElementById("matrices").classList.add("oculto");
     document.getElementById("traslacion").classList.add("oculto");
+    document.getElementById("rotacion").classList.add("oculto");
     document.getElementById(id).classList.remove("oculto");
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -26,6 +28,10 @@ function mostrarMatrices() {
 
 function mostrarTraslacion() {
     mostrarPantalla("traslacion");
+}
+
+function mostrarRotacion() {
+    mostrarPantalla("rotacion");
 }
 
 function volverInicio() {
@@ -46,6 +52,52 @@ function limpiarCampos(ids) {
     ids.forEach((id) => {
         document.getElementById(id).value = "";
     });
+}
+
+function limpiarNumero(valor) {
+    return Math.abs(valor) < 1e-10 ? 0 : valor;
+}
+
+function celdaProducto(valor) {
+    return `<span>${limpiarNumero(Number(valor)).toFixed(4)}</span>`;
+}
+
+function renderProductoHomogeneo(id, tituloMatriz, matriz, vector, resultado, vectorEntrada, vectorSalida) {
+    document.getElementById(id).innerHTML = `
+        <div class="producto-fila">
+            <div class="producto-bloque">
+                <span class="producto-titulo">${tituloMatriz}</span>
+                <div class="matriz-visual" aria-label="${tituloMatriz}">
+                    ${matriz.flat().map(celdaProducto).join("")}
+                </div>
+            </div>
+            <div class="producto-signo">\u00d7</div>
+            <div class="producto-bloque">
+                <span class="producto-titulo">${vectorEntrada}</span>
+                <div class="vector-visual" aria-label="${vectorEntrada}">
+                    ${vector.map(celdaProducto).join("")}
+                </div>
+            </div>
+            <div class="producto-signo">=</div>
+            <div class="producto-bloque">
+                <span class="producto-titulo">${vectorSalida}</span>
+                <div class="vector-visual" aria-label="${vectorSalida}">
+                    ${resultado.map(celdaProducto).join("")}
+                </div>
+            </div>
+        </div>`;
+}
+
+function matrizTexto(titulo, matriz) {
+    const formato = (valor) => limpiarNumero(valor).toFixed(4).padStart(9);
+    return `
+${titulo} =
+\u250c                                  \u2510
+  ${formato(matriz[0][0])} ${formato(matriz[0][1])} ${formato(matriz[0][2])} ${formato(matriz[0][3])}
+  ${formato(matriz[1][0])} ${formato(matriz[1][1])} ${formato(matriz[1][2])} ${formato(matriz[1][3])}
+  ${formato(matriz[2][0])} ${formato(matriz[2][1])} ${formato(matriz[2][2])} ${formato(matriz[2][3])}
+  ${formato(matriz[3][0])} ${formato(matriz[3][1])} ${formato(matriz[3][2])} ${formato(matriz[3][3])}
+\u2514                                  \u2518`;
 }
 
 function limpiarResultadosCuaternios() {
@@ -253,6 +305,94 @@ T(p) =
                 </div>
             </div>
         </div>`;
+}
+
+function limpiarRotacion() {
+    limpiarCampos(idsRotacion);
+    document.getElementById("ejeRotacion").value = "z";
+    ["rotacionParametros", "rotacionVectorOriginal", "rotacionVectorResultado", "matrizRotacion", "productoRotacion"].forEach((id) => {
+        document.getElementById(id).textContent = "";
+    });
+}
+
+function cargarEjemploRotacion() {
+    document.getElementById("ejeRotacion").value = "z";
+    colocarValores({
+        anguloRotacion: -90,
+        rotRu: 4,
+        rotRv: 8,
+        rotRw: 12
+    });
+    calcularRotacion();
+}
+
+function obtenerMatrizRotacion(eje, grados) {
+    const radianes = grados * Math.PI / 180;
+    const c = limpiarNumero(Math.cos(radianes));
+    const s = limpiarNumero(Math.sin(radianes));
+
+    if (eje === "x") {
+        return [
+            [1, 0, 0, 0],
+            [0, c, -s, 0],
+            [0, s, c, 0],
+            [0, 0, 0, 1]
+        ];
+    }
+
+    if (eje === "y") {
+        return [
+            [c, 0, s, 0],
+            [0, 1, 0, 0],
+            [-s, 0, c, 0],
+            [0, 0, 0, 1]
+        ];
+    }
+
+    return [
+        [c, -s, 0, 0],
+        [s, c, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ];
+}
+
+function nombreRotacion(eje) {
+    if (eje === "x") {
+        return "Rotx";
+    }
+
+    if (eje === "y") {
+        return "Roty";
+    }
+
+    return "Rotz";
+}
+
+function calcularRotacion() {
+    const eje = document.getElementById("ejeRotacion").value;
+    const angulo = numero("anguloRotacion");
+    const ru = numero("rotRu");
+    const rv = numero("rotRv");
+    const rw = numero("rotRw");
+    const matriz = obtenerMatrizRotacion(eje, angulo);
+    const vector = [ru, rv, rw, 1];
+
+    const resultado = matriz.map((fila) =>
+        limpiarNumero(fila.reduce((total, valor, indice) => total + valor * vector[indice], 0))
+    );
+
+    const rotacion = nombreRotacion(eje);
+
+    document.getElementById("rotacionParametros").textContent =
+        `${rotacion}(${angulo.toFixed(4)}°) alrededor del eje O${eje.toUpperCase()}`;
+    document.getElementById("rotacionVectorOriginal").textContent =
+        `r_uvw = (${ru.toFixed(4)}, ${rv.toFixed(4)}, ${rw.toFixed(4)})`;
+    document.getElementById("rotacionVectorResultado").textContent =
+        `r_xyz = (${resultado[0].toFixed(4)}, ${resultado[1].toFixed(4)}, ${resultado[2].toFixed(4)})`;
+
+    document.getElementById("matrizRotacion").textContent = matrizTexto(rotacion, matriz);
+    renderProductoHomogeneo("productoRotacion", rotacion, matriz, vector, resultado, "r_uvw", "r_xyz");
 }
 
 if ("serviceWorker" in navigator) {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "calculadora-robotica-v5";
+const CACHE_NAME = "calculadora-robotica-v6";
 const APP_SHELL = [
   "./",
   "./index.html",

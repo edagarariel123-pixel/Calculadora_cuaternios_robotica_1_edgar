@@ -33,7 +33,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
     font: inherit;
 }
 
@@ -249,7 +250,8 @@ label {
     max-width: 360px;
 }
 
-input {
+input,
+select {
     width: 100%;
     min-height: 52px;
     padding: 13px 14px;
@@ -265,9 +267,18 @@ input::placeholder {
     color: rgba(203, 213, 225, 0.62);
 }
 
-input:focus {
+input:focus,
+select:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
+}
+
+select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--accent) 50%), linear-gradient(135deg, var(--accent) 50%, transparent 50%);
+    background-position: calc(100% - 18px) 22px, calc(100% - 12px) 22px;
+    background-repeat: no-repeat;
+    background-size: 6px 6px, 6px 6px;
 }
 
 .boton-principal {

@@ -201,6 +201,7 @@ function calcularTraslacion() {
     const rx = ru + px;
     const ry = rv + py;
     const rz = rw + pz;
+    const formato = (valor) => valor.toFixed(4).padStart(9);
 
     document.getElementById("vectorTraslacion").textContent =
         `p = (${px.toFixed(4)}, ${py.toFixed(4)}, ${pz.toFixed(4)})`;
@@ -212,19 +213,29 @@ function calcularTraslacion() {
     const matriz = `
 T(p) =
 \u250c                                  \u2510
-  1.0000   0.0000   0.0000   ${px.toFixed(4)}
-  0.0000   1.0000   0.0000   ${py.toFixed(4)}
-  0.0000   0.0000   1.0000   ${pz.toFixed(4)}
-  0.0000   0.0000   0.0000   1.0000
+  1.0000   0.0000   0.0000  ${formato(px)}
+  0.0000   1.0000   0.0000  ${formato(py)}
+  0.0000   0.0000   1.0000  ${formato(pz)}
+  0.0000   0.0000   0.0000     1.0000
 \u2514                                  \u2518`;
 
     const producto = `
-\u250c      \u2510   \u250c                                  \u2510 \u250c      \u2510   \u250c      \u2510
-  rx       1   0   0   ${px.toFixed(4)}        ru       ${rx.toFixed(4)}
-  ry   =   0   1   0   ${py.toFixed(4)}    x   rv   =   ${ry.toFixed(4)}
-  rz       0   0   1   ${pz.toFixed(4)}        rw       ${rz.toFixed(4)}
-  1        0   0   0   1             1        1.0000
-\u2514      \u2518   \u2514                                  \u2518 \u2514      \u2518   \u2514      \u2518`;
+T(p) \u00d7 r_uvw
+
+\u250c                                  \u2510   \u250c           \u2510
+  1.0000   0.0000   0.0000  ${formato(px)}     ${formato(ru)}
+  0.0000   1.0000   0.0000  ${formato(py)}  \u00d7  ${formato(rv)}
+  0.0000   0.0000   1.0000  ${formato(pz)}     ${formato(rw)}
+  0.0000   0.0000   0.0000     1.0000       1.0000
+\u2514                                  \u2518   \u2514           \u2518
+
+Resultado:
+\u250c           \u2510
+  ${formato(rx)}
+  ${formato(ry)}
+  ${formato(rz)}
+     1.0000
+\u2514           \u2518`;
 
     document.getElementById("matrizTraslacion").textContent = matriz;
     document.getElementById("productoTraslacion").textContent = producto;

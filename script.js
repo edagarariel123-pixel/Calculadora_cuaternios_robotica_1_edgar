@@ -528,13 +528,22 @@ function calcularRotacion() {
 }
 
 function actualizarMatricesGenerales() {
-    const dimension = parseInt(document.getElementById("dimensionMatrices").value, 10);
-    crearMatrizGeneral("A", dimension);
-    crearMatrizGeneral("B", dimension);
+    const dimensiones = dimensionesMatricesGenerales();
+    crearMatrizGeneral("A", dimensiones.filasA, dimensiones.columnasA);
+    crearMatrizGeneral("B", dimensiones.filasB, dimensiones.columnasB);
     actualizarOperacionMatrices();
 }
 
-function crearMatrizGeneral(nombre, dimension) {
+function dimensionesMatricesGenerales() {
+    return {
+        filasA: parseInt(document.getElementById("filasMatrizA").value, 10),
+        columnasA: parseInt(document.getElementById("columnasMatrizA").value, 10),
+        filasB: parseInt(document.getElementById("filasMatrizB").value, 10),
+        columnasB: parseInt(document.getElementById("columnasMatrizB").value, 10)
+    };
+}
+
+function crearMatrizGeneral(nombre, filas, columnas) {
     const contenedor = document.getElementById(`matrizGeneral${nombre}`);
     const valoresAnteriores = {};
 
@@ -543,10 +552,11 @@ function crearMatrizGeneral(nombre, dimension) {
     });
 
     contenedor.innerHTML = "";
-    contenedor.dataset.size = String(dimension);
+    contenedor.dataset.rows = String(filas);
+    contenedor.dataset.cols = String(columnas);
 
-    for (let fila = 0; fila < dimension; fila += 1) {
-        for (let columna = 0; columna < dimension; columna += 1) {
+    for (let fila = 0; fila < filas; fila += 1) {
+        for (let columna = 0; columna < columnas; columna += 1) {
             const input = document.createElement("input");
             const posicion = `${fila}-${columna}`;
             input.type = "text";
@@ -570,13 +580,15 @@ function actualizarOperacionMatrices() {
 }
 
 function leerMatrizGeneral(nombre) {
-    const dimension = parseInt(document.getElementById("dimensionMatrices").value, 10);
+    const dimensiones = dimensionesMatricesGenerales();
+    const filas = nombre === "A" ? dimensiones.filasA : dimensiones.filasB;
+    const columnas = nombre === "A" ? dimensiones.columnasA : dimensiones.columnasB;
     const matriz = [];
 
-    for (let fila = 0; fila < dimension; fila += 1) {
+    for (let fila = 0; fila < filas; fila += 1) {
         const filaValores = [];
 
-        for (let columna = 0; columna < dimension; columna += 1) {
+        for (let columna = 0; columna < columnas; columna += 1) {
             filaValores.push(expresionDesdeEntrada(document.getElementById(`mat${nombre}${fila}${columna}`).value));
         }
 
@@ -596,18 +608,25 @@ function limpiarMatricesGenerales() {
 }
 
 function cargarEjemploMatricesGenerales() {
-    document.getElementById("dimensionMatrices").value = "2";
+    document.getElementById("filasMatrizA").value = "2";
+    document.getElementById("columnasMatrizA").value = "3";
+    document.getElementById("filasMatrizB").value = "3";
+    document.getElementById("columnasMatrizB").value = "2";
     document.getElementById("operacionMatrices").value = "multiplicacion";
     actualizarMatricesGenerales();
     colocarValores({
         matA00: "cos(30)",
         matA01: "-sen(30)",
+        matA02: "a",
         matA10: "sen(30)",
         matA11: "cos(30)",
+        matA12: "b",
         matB00: "x",
         matB01: "1",
         matB10: "2",
-        matB11: "y"
+        matB11: "y",
+        matB20: "3",
+        matB21: "z"
     });
     calcularMatricesGenerales();
 }
@@ -621,16 +640,18 @@ function restarMatrices(A, B) {
 }
 
 function multiplicarMatrices(A, B) {
-    const dimension = A.length;
+    const filasA = A.length;
+    const columnasA = A[0].length;
+    const columnasB = B[0].length;
     const resultado = [];
 
-    for (let fila = 0; fila < dimension; fila += 1) {
+    for (let fila = 0; fila < filasA; fila += 1) {
         const filaResultado = [];
 
-        for (let columna = 0; columna < dimension; columna += 1) {
+        for (let columna = 0; columna < columnasB; columna += 1) {
             let total = exprNumero(0);
 
-            for (let k = 0; k < dimension; k += 1) {
+            for (let k = 0; k < columnasA; k += 1) {
                 total = exprSuma(total, exprProducto(A[fila][k], B[k][columna]));
             }
 
@@ -644,7 +665,9 @@ function multiplicarMatrices(A, B) {
 }
 
 function transponerMatriz(A) {
-    return A.map((fila, i) => fila.map((_, j) => A[j][i]));
+    return Array.from({ length: A[0].length }, (_, columna) =>
+        Array.from({ length: A.length }, (_, fila) => A[fila][columna])
+    );
 }
 
 function escalarPorMatriz(escalar, A) {
@@ -657,7 +680,8 @@ function renderMatrizResultado(matriz) {
 
     const grid = document.createElement("div");
     grid.className = "matriz-resultado-grid";
-    grid.dataset.size = String(matriz[0].length);
+    grid.dataset.rows = String(matriz.length);
+    grid.dataset.cols = String(matriz[0].length);
 
     matriz.flat().forEach((expr) => {
         const celda = document.createElement("span");
@@ -668,26 +692,52 @@ function renderMatrizResultado(matriz) {
     contenedor.appendChild(grid);
 }
 
+function mostrarErrorMatrices(mensaje) {
+    document.getElementById("detalleMatrices").textContent = mensaje;
+    document.getElementById("resultadoMatricesGenerales").innerHTML = "";
+}
+
 function calcularMatricesGenerales() {
     const operacion = document.getElementById("operacionMatrices").value;
     const A = leerMatrizGeneral("A");
     const B = leerMatrizGeneral("B");
+    const dimensiones = dimensionesMatricesGenerales();
     const detalle = document.getElementById("detalleMatrices");
     let resultado;
 
     if (operacion === "suma") {
+        if (dimensiones.filasA !== dimensiones.filasB || dimensiones.columnasA !== dimensiones.columnasB) {
+            mostrarErrorMatrices("Para sumar, A y B deben tener las mismas dimensiones.");
+            return;
+        }
+
         resultado = sumarMatrices(A, B);
         detalle.textContent = "Resultado de A + B";
     } else if (operacion === "resta") {
+        if (dimensiones.filasA !== dimensiones.filasB || dimensiones.columnasA !== dimensiones.columnasB) {
+            mostrarErrorMatrices("Para restar, A y B deben tener las mismas dimensiones.");
+            return;
+        }
+
         resultado = restarMatrices(A, B);
         detalle.textContent = "Resultado de A - B";
     } else if (operacion === "multiplicacion") {
+        if (dimensiones.columnasA !== dimensiones.filasB) {
+            mostrarErrorMatrices("Para multiplicar A x B, las columnas de A deben coincidir con las filas de B.");
+            return;
+        }
+
         resultado = multiplicarMatrices(A, B);
-        detalle.textContent = "Resultado de A x B";
+        detalle.textContent = `Resultado de A(${dimensiones.filasA}x${dimensiones.columnasA}) x B(${dimensiones.filasB}x${dimensiones.columnasB})`;
     } else if (operacion === "transpuesta") {
         resultado = transponerMatriz(A);
-        detalle.textContent = "Transpuesta de A";
+        detalle.textContent = `Transpuesta de A: ${dimensiones.columnasA}x${dimensiones.filasA}`;
     } else if (operacion === "determinante") {
+        if (dimensiones.filasA !== dimensiones.columnasA) {
+            mostrarErrorMatrices("El determinante solo existe para matrices cuadradas. Ajusta A para que filas A = columnas A.");
+            return;
+        }
+
         resultado = [[determinanteExpresion(A)]];
         detalle.textContent = "Determinante de A";
     } else {

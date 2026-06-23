@@ -319,19 +319,46 @@
 
                 <header class="encabezado">
                     <h1>Operaciones de Matrices</h1>
-                    <p>Elige una dimensi&oacute;n hasta 4x4 e ingresa n&uacute;meros, variables o funciones trigonom&eacute;tricas. Ejemplos: <strong>cos(30)</strong>, <strong>sen(theta)</strong>, <strong>a</strong>, <strong>2*x</strong>.</p>
+                    <p>Elige filas y columnas hasta 4 para cada matriz e ingresa n&uacute;meros, variables o funciones trigonom&eacute;tricas. Ejemplos: <strong>cos(30)</strong>, <strong>sen(theta)</strong>, <strong>a</strong>, <strong>2*x</strong>.</p>
                 </header>
 
                 <section class="card">
                     <h2>Configuraci&oacute;n</h2>
-                    <div class="inputs inputs-tres">
+                    <div class="inputs">
                         <label>
-                            <span>Dimensi&oacute;n</span>
-                            <select id="dimensionMatrices" onchange="actualizarMatricesGenerales()">
-                                <option value="2">2x2</option>
-                                <option value="1">1x1</option>
-                                <option value="3">3x3</option>
-                                <option value="4">4x4</option>
+                            <span>Filas de A</span>
+                            <select id="filasMatrizA" onchange="actualizarMatricesGenerales()">
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Columnas de A</span>
+                            <select id="columnasMatrizA" onchange="actualizarMatricesGenerales()">
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Filas de B</span>
+                            <select id="filasMatrizB" onchange="actualizarMatricesGenerales()">
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Columnas de B</span>
+                            <select id="columnasMatrizB" onchange="actualizarMatricesGenerales()">
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
                             </select>
                         </label>
                         <label>
